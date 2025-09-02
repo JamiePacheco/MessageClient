@@ -1,24 +1,54 @@
-import React from 'react';
+import {useRef} from 'react';
 import logo from './logo.svg';
 import './App.css';
+import {RxStomp, RxStompConfig} from "@stomp/rx-stomp"
+import {useEffect} from "react";
+import Status from './components/status';
+import {useState} from "react";
+import Chatroom from './components/Chatroom';
 
 function App() {
+
+  const rxStompRef = useRef(new RxStomp());
+  const rxStomp = rxStompRef.current;
+
+  const [joinedChatroom, setJoinedChatroom] = useState(false);
+
+  const rxStompConfig : RxStompConfig = {
+    brokerURL: `ws://localhost:8080/test`,
+    debug : (msg) => {
+      console.log(new Date(), msg)
+    }
+  }
+
+  useEffect(() => {
+    rxStomp.configure(rxStompConfig);
+    rxStomp.activate();
+    return () => {
+      rxStomp.deactivate();
+    }
+  })
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Status rxStomp = {rxStomp}/>
+
+      {
+        !joinedChatroom && (
+            <button onClick={() => setJoinedChatroom(true)}> join chatroom! </button>
+          )
+      }
+
+      {
+        joinedChatroom &&
+          <>
+            <button onClick={() => setJoinedChatroom(false)}>Leave Chatroom!</button>
+            <Chatroom rxStomp = {rxStomp}/>
+          </>
+
+      }
+
+
     </div>
   );
 }
