@@ -6,50 +6,14 @@ import {useEffect} from "react";
 import Status from './components/status';
 import {useState} from "react";
 import Chatroom from './components/Chatroom';
+import {Route, Routes } from 'react-router-dom';
 
 function App() {
 
-  const rxStompRef = useRef(new RxStomp());
-  const rxStomp = rxStompRef.current;
-
-  const [joinedChatroom, setJoinedChatroom] = useState(false);
-
-  const rxStompConfig : RxStompConfig = {
-    brokerURL: `ws://localhost:8080/test`,
-    debug : (msg) => {
-      console.log(new Date(), msg)
-    }
-  }
-
-  useEffect(() => {
-    rxStomp.configure(rxStompConfig);
-    rxStomp.activate();
-    return () => {
-      rxStomp.deactivate();
-    }
-  })
-  
   return (
-    <div>
-      <Status rxStomp = {rxStomp}/>
-
-      {
-        !joinedChatroom && (
-            <button onClick={() => setJoinedChatroom(true)}> join chatroom! </button>
-          )
-      }
-
-      {
-        joinedChatroom &&
-          <>
-            <button onClick={() => setJoinedChatroom(false)}>Leave Chatroom!</button>
-            <Chatroom rxStomp = {rxStomp}/>
-          </>
-
-      }
-
-
-    </div>
+    <Routes>
+      <Route path = "/" element = {<Home/>} />
+    </Routes>
   );
 }
 
