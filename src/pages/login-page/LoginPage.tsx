@@ -18,7 +18,10 @@ export default function LoginPage() {
     const [userNameTouched, setUserNameTouched] = useState(false)
     const [passwordTouched, setPasswordTouched] = useState(false);
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+
+        event.preventDefault();
+        event.stopPropagation();
 
         const usernameState = (!userNameTouched || username === "");
         const passwordState = (!passwordTouched) || (password === "");
@@ -35,17 +38,22 @@ export default function LoginPage() {
         //TODO call api authentication
 
 
+        await authenticateUser(username, password).then((res) => {
+            console.log(JSON.stringify(res, null, 4));
+        }).catch((e) => {
+            console.log(e)
+        });
 
 
 
 
 
-        const form = event.currentTarget as HTMLFormElement;
-        if (form !== null && !form.checkValidity()) {
-            console.log("not valid form")
-            event.preventDefault();
-            event.stopPropagation();
-        }
+        // const form = event.currentTarget as HTMLFormElement;
+        // if (form !== null && !form.checkValidity()) {
+        //     console.log("not valid form")
+        //     event.preventDefault();
+        //     event.stopPropagation();
+        // }
 
     }
 
