@@ -3,6 +3,7 @@ import {FormEvent, useState} from "react";
 import AuthLayout from "../../components/layouts/AuthLayout";
 
 import {authenticateUser} from "../../service/AuthenticationService";
+import {getUser} from "../../service/UserService";
 
 export default function LoginPage() {
 
@@ -33,20 +34,18 @@ export default function LoginPage() {
             setPasswordErrorMessage(!passwordState ? "" : "Password Required");
             setPasswordValidated(passwordState);
         }
-
-
         //TODO call api authentication
-
-
-        await authenticateUser(username, password).then((res) => {
+        await authenticateUser(username, password).then(async (res) => {
+            const token = res.responseContent;
+            console.log(token);
+            //TODO store the token in app state
+            await getUser(token).then((res) => {
+                console.log(JSON.stringify(res, null, 4))
+            })
             console.log(JSON.stringify(res, null, 4));
         }).catch((e) => {
             console.log(e)
         });
-
-
-
-
 
         // const form = event.currentTarget as HTMLFormElement;
         // if (form !== null && !form.checkValidity()) {

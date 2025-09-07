@@ -1,4 +1,8 @@
 
-type AuthContextType = {
+// type AuthContextType = {
+//
+// }
 
+export function AuthContext() {
+    return
 }
