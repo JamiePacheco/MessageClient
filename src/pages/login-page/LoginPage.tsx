@@ -4,8 +4,14 @@ import AuthLayout from "../../components/layouts/AuthLayout";
 
 import {authenticateUser} from "../../service/AuthenticationService";
 import {getUser} from "../../service/UserService";
+import {useAuth} from "../../context/AuthContext";
+import {useNavigate} from "react-router-dom";
 
 export default function LoginPage() {
+
+    const {user, setUser, logout} = useAuth();
+
+    const nav = useNavigate();
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -36,15 +42,17 @@ export default function LoginPage() {
         }
         //TODO call api authentication
         await authenticateUser(username, password).then(async (res) => {
-            const token = res.responseContent;
-            console.log(token);
             //TODO store the token in app state
-            await getUser(token).then((res) => {
-                console.log(JSON.stringify(res, null, 4))
+            await getUser().then((res) => {
+                console.log(JSON.stringify(res.responseContent, null, 4))
+                setUser(res.responseContent);
+                nav("/")
             })
             console.log(JSON.stringify(res, null, 4));
         }).catch((e) => {
-            console.log(e)
+            setPasswordErrorMessage(e.response.data.message);
+            setPasswordValidated(false);
+            console.log(e.response.data.message)
         });
 
         // const form = event.currentTarget as HTMLFormElement;
@@ -81,7 +89,7 @@ export default function LoginPage() {
                             placeholder="password"
                             id = "input-password"
                             name = "password"
-                            isValid={usernameValidated}
+                            isValid={passwordValidated}
                             onBlur={() => setPasswordTouched(true)}
                             onChange={(e) => setPassword(e.target.value)}
                             required
